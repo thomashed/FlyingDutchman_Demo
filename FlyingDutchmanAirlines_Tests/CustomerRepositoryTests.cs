@@ -38,12 +38,17 @@ public class CustomerRepositoryTests
     }
 
     [TestMethod]
-    public void CreateCustomer_Failure_InvalidCharacter()
+    [DataRow('#')]
+    [DataRow('$')]
+    [DataRow('%')]
+    [DataRow('&')]
+    [DataRow('*')]
+    public void CreateCustomer_Failure_InvalidCharacter(char invalidChar)
     {
         CustomerRepository repository = new CustomerRepository();
         Assert.IsNotNull(repository);
 
-        bool result = repository.CreateCustomer("someName!");
+        bool result = repository.CreateCustomer($"someName{invalidChar}");
         Assert.IsFalse(result);
     }
     

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FlyingDutchmanAirlines.DatabaseLayer.Models;
 
-public partial class Booking
+public class Booking
 {
     public int BookingId { get; set; }
 
@@ -11,7 +11,7 @@ public partial class Booking
 
     public int? CustomerId { get; set; }
 
-    public virtual Customer? Customer { get; set; }
+    public Customer? Customer { get; set; }
 
-    public virtual Flight FlightNumberNavigation { get; set; } = null!;
+    public Flight FlightNumberNavigation { get; set; } = null!;
 }
