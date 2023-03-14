@@ -1,6 +1,7 @@
 using FlyingDutchmanAirlines.RepositoryLayer;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using FlyingDutchmanAirlines_Tests.RepositoryLayer.Stubs;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
@@ -20,16 +21,21 @@ public class BookingRepositoryTests
         DbContextOptions<FlyingDutchmanAirlinesContext> dbContextOptions =
             new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
                 .UseInMemoryDatabase("FlyingDutchman").Options;
-        _context = new FlyingDutchmanAirlinesContext(dbContextOptions);
+        _context = new FlyingDutchmanAirlinesContext_Stub(dbContextOptions);
 
         _repository = new BookingRepository(_context);
         Assert.IsNotNull(_repository);
     }
 
     [TestMethod]
-    public void CreateBooking_Success()
+    public async Task CreateBooking_Success()
     {
-        Assert.IsTrue(true);
+        await _repository.CreateBooking(1, 0);
+        Booking booking = _context.Bookings.First();
+        
+        Assert.IsNotNull(booking);
+        Assert.AreEqual(1, booking.CustomerId);
+        Assert.AreEqual(0, booking.FlightNumber);
     }
 
     [TestMethod]
@@ -41,4 +47,13 @@ public class BookingRepositoryTests
     {
         await _repository.CreateBooking(customerId, flightNumber);
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(CouldNotAddBookingToDatabaseException))]
+    public async Task CreateBooking_Failure_DatabaseError()
+    {
+        await _repository.CreateBooking(0,1);
+    }
+    
+    
 }
