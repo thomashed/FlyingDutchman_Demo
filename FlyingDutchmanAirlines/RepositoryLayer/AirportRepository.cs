@@ -1,5 +1,7 @@
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
+using FlyingDutchmanAirlines.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer;
 
@@ -15,12 +17,19 @@ public class AirportRepository
 
     public async Task<Airport> GetAirportById(int airportID)
     {
-        // Steps of retrieving an airport:
-        // 1: Arg validation, throw exception if needed 
-        // 2: Check dbContext's Airport collection giving id as arg
-        // 3: check for db error
-        // 4: return the value if found 
+        if (IsInputInvalid(airportID))
+        {
+            Console.WriteLine($"ArgumentException in GetAirportById! AirportId: " +
+                              $"{airportID}");
+            throw new ArgumentException("Invalid arguments provided");
+        }
         
-        return new Airport();
+        return await _context.Airports.FirstOrDefaultAsync(a => a.AirportId == airportID) 
+               ?? throw new AirportNotFoundException();
+    }
+
+    private bool IsInputInvalid(int airportId)
+    {
+        return airportId < 0;
     }
 }

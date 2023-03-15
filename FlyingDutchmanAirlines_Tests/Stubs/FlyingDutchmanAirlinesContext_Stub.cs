@@ -18,11 +18,18 @@ public class FlyingDutchmanAirlinesContext_Stub : FlyingDutchmanAirlinesContext
     {
         IEnumerable<EntityEntry> pendingChanges = ChangeTracker.Entries().Where(e => e.State == EntityState.Added);
         IEnumerable<Booking> bookings = pendingChanges.Select(e => e.Entity).OfType<Booking>();
+        IEnumerable<Airport> airports = pendingChanges.Select(e => e.Entity).OfType<Airport>();
 
         if (bookings.Any(b => b.CustomerId != 1))
         {
             throw new Exception("Database Error!");
         }
+
+        // TODO: continue this
+        // if (!airports.Any())
+        // {
+        //     throw new Exception("Database Error!"); 
+        // }
         
         await base.SaveChangesAsync(cancellationToken);
         return 1;
