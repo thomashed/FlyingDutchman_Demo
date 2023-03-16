@@ -1,5 +1,6 @@
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
+using FlyingDutchmanAirlines.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FlyingDutchmanAirlines.RepositoryLayer;
@@ -15,10 +16,17 @@ public class FlightRepository
 
     public async Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAirportId, int destinationAirportId)
     {
+        if (!flightNumber.IsPositive())
+        {
+            Console.WriteLine($"Couldn't find requested flight! " +
+                              $"flightNumber: {flightNumber}");
+            throw new FlightNotFoundException();
+        }
+        
         if (!originAirportId.IsPositive() || !destinationAirportId.IsPositive())
         {
             Console.WriteLine($"ArgumentException in GetFlightByFlightNumber! " +
-                              $"GetFlightByFlightNumber: {{airportID}}, " +
+                              $"GetFlightByFlightNumber: {flightNumber}, " +
                               $"originAirportId: {originAirportId}, " +
                               $"destinationAirportId: {destinationAirportId}");
             throw new ArgumentException("Invalid arguments provided");

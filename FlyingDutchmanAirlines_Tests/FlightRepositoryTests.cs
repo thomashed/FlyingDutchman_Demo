@@ -26,7 +26,29 @@ public class FlightRepositoryTests
         _repository = new FlightRepository(_context);
         Assert.IsNotNull(_repository);
     }
-    
-    
-    
+
+    [TestMethod]
+    [DataRow(1,-1,0)]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirport(int flightNumber, int originAirportId, int destinationAirportId)
+    {
+        await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
+    }
+
+    [TestMethod]
+    [DataRow(1,1,-1)]
+    [ExpectedException(typeof(ArgumentException))]
+    public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirport(int flightNumber, int originAirportId, int destinationAirportId)
+    {
+        await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
+    }
+
+    [TestMethod]
+    [DataRow(-1,1,1)]
+    [ExpectedException(typeof(FlightNotFoundException))]
+    public async Task GetFlightByFlightNumber_Failure_InvalidFlightNumber(int flightNumber, int originAirportId, int destinationAirportId)
+    {
+        await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
+    }
+
 }
