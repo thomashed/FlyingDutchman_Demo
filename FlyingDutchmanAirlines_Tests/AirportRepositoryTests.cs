@@ -24,13 +24,6 @@ public class AirportRepositoryTests
                 .UseInMemoryDatabase("FlyingDutchman").Options;
         _context = new FlyingDutchmanAirlinesContext_Stub(dbContextOptions);
 
-        Airport newAirport = new Airport()
-        {
-            AirportId = 0,
-            City = "Nuuk",
-            Iata = " GOH"
-        };
-
         SortedList<string, Airport> airports = new SortedList<string, Airport>()
         {
             {
