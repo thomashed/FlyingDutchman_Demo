@@ -15,6 +15,11 @@ public class FlightRepository
 
     public async Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAirportId, int destinationAirportId)
     {
+        if (int.IsPositive(flightNumber))
+        {
+            
+        }
+        
         var flight = await _context.Flights.FirstAsync(
             f => 
                 f.FlightNumber == flightNumber && 

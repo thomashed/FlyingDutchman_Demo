@@ -15,7 +15,7 @@ public class BookingRepository
 
     public async Task CreateBooking(int customerID, int flightNumber)
     {
-        if (customerID < 0 || flightNumber < 0)
+        if ( !int.IsPositive(customerID) || !int.IsPositive(flightNumber))
         {
             Console.WriteLine($"ArgumentException in CreateBooking! CustomerId " +
                               $"= {customerID}, flightnumber = {flightNumber}");

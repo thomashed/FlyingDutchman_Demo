@@ -17,7 +17,7 @@ public class AirportRepository
 
     public async Task<Airport> GetAirportById(int airportID)
     {
-        if (IsInputInvalid(airportID))
+        if (!int.IsPositive(airportID))
         {
             Console.WriteLine($"ArgumentException in GetAirportById! AirportId: " +
                               $"{airportID}");
@@ -26,10 +26,5 @@ public class AirportRepository
         
         return await _context.Airports.FirstOrDefaultAsync(a => a.AirportId == airportID) 
                ?? throw new AirportNotFoundException();
-    }
-
-    private bool IsInputInvalid(int airportId)
-    {
-        return airportId < 0;
     }
 }
