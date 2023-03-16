@@ -25,9 +25,9 @@ public class FlyingDutchmanAirlinesContext_Stub : FlyingDutchmanAirlinesContext
             throw new Exception("Database Error!");
         }
         
-        if (airports.Any(airport => airport.AirportId != 0))
+        if (airports.Any(a => a.AirportId == 10)) // TODO: unless we check whether invalid entities exist, this makes no sense 
         {
-            throw new Exception("Database Error!"); 
+            throw new Exception("Database Error with airports!"); 
         }
         
         await base.SaveChangesAsync(cancellationToken);
