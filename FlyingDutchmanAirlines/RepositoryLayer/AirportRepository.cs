@@ -17,7 +17,7 @@ public class AirportRepository
 
     public async Task<Airport> GetAirportById(int airportID)
     {
-        if (!int.IsPositive(airportID))
+        if (!airportID.IsPositive())
         {
             Console.WriteLine($"ArgumentException in GetAirportById! AirportId: " +
                               $"{airportID}");
