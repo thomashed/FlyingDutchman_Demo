@@ -16,17 +16,39 @@ public class FlightRepositoryTests
     private FlightRepository _repository;
 
     [TestInitialize]
-    public void TestInitialize()
+    public async Task TestInitialize()
     {
         DbContextOptions<FlyingDutchmanAirlinesContext> dbContextOptions =
             new DbContextOptionsBuilder<FlyingDutchmanAirlinesContext>()
                 .UseInMemoryDatabase("FlyingDutchman").Options;
         _context = new FlyingDutchmanAirlinesContext_Stub(dbContextOptions);
 
+        Flight flight = new Flight()
+        {
+            FlightNumber = 1,
+            Origin = 1,
+            Destination = 2
+        };
+
+        _context.Flights.Add(flight);
+        await _context.SaveChangesAsync();
+        
         _repository = new FlightRepository(_context);
         Assert.IsNotNull(_repository);
     }
 
+    [TestMethod]
+    public async Task GetFlightByFlightNumber_Success()
+    {
+        Flight flight = await _repository.GetFlightByFlightNumber(1, 1, 2);
+        Flight dbFlight = await _context.Flights.FirstAsync(f => f.FlightNumber == 1);
+        
+        Assert.IsNotNull(dbFlight);
+        Assert.AreEqual(flight.FlightNumber, dbFlight.FlightNumber);
+        Assert.AreEqual(flight.Origin, dbFlight.Origin);
+        Assert.AreEqual(flight.Destination, dbFlight.Destination);
+    }
+    
     [TestMethod]
     [DataRow(1,-1,0)]
     [ExpectedException(typeof(ArgumentException))]
@@ -51,4 +73,12 @@ public class FlightRepositoryTests
         await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
     }
 
+    [TestMethod]
+    [ExpectedException(typeof(FlightNotFoundException))]
+    public async Task GetFlightByFlightNumber_Failure_DatabaseException()
+    {
+        int invalidArgs = 3;
+        await _repository.GetFlightByFlightNumber(invalidArgs,invalidArgs,invalidArgs);
+    }
+    
 }
