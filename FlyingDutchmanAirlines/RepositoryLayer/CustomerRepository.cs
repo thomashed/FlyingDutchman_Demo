@@ -1,4 +1,6 @@
 using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
@@ -14,6 +16,15 @@ public class CustomerRepository
     public CustomerRepository(FlyingDutchmanAirlinesContext context)
     {
         _context = context;
+    }
+
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public CustomerRepository()
+    {
+        if (Assembly.GetExecutingAssembly().FullName == Assembly.GetCallingAssembly().FullName)
+        {
+            throw new Exception("This constructor should only be used for testing");
+        }
     }
 
     public async Task<bool> CreateCustomer(string name)
@@ -46,7 +57,7 @@ public class CustomerRepository
         return string.IsNullOrEmpty(name) || name.Any(x => invalidChars.Contains(x));
     }
 
-    public async Task<Customer> GetCustomerByName(string name)
+    public virtual async Task<Customer> GetCustomerByName(string name)
     {
         if (IsInvalidCustomerName(name))
         {
