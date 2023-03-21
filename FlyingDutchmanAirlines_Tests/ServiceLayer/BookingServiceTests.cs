@@ -19,12 +19,14 @@ public class BookingServiceTests
 {
     private Mock<BookingRepository> _mockBookingRepository;
     private Mock<CustomerRepository> _mockCustomerRepository;
+    private Mock<FlightRepository> _mockFlightRepository;
 
     [TestInitialize]
     public async Task TestInitialize()
     {
         _mockBookingRepository = new Mock<BookingRepository>();
         _mockCustomerRepository = new Mock<CustomerRepository>();
+        _mockFlightRepository = new Mock<FlightRepository>();
     }
 
     [TestMethod]
@@ -36,7 +38,7 @@ public class BookingServiceTests
             repository.GetCustomerByName("Leo Tolstoy")).Returns(Task.FromResult(new Customer("Leo Tolstoy")));
         
         BookingService service = 
-            new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object);
+            new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object, _mockFlightRepository.Object);
 
         (bool result, Exception exception) = await service.CreateBooking("Leo Tolstoy", 0);
         Assert.IsTrue(result);
@@ -50,7 +52,7 @@ public class BookingServiceTests
     public async Task CreateBooking_Failure_InvalidInputArguments(string name, int flightNumber)
     {
         BookingService service = 
-            new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object);
+            new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object, _mockFlightRepository.Object);
 
         (bool result, Exception exception) = await service.CreateBooking(name, flightNumber);
         
@@ -67,7 +69,7 @@ public class BookingServiceTests
         _mockCustomerRepository.Setup(repository => repository.GetCustomerByName("Galileo Galilei"))
             .Returns(Task.FromResult(new Customer("Galileo Galilei"){CustomerId = 0}));
         
-        BookingService service = new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object);
+        BookingService service = new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object, _mockFlightRepository.Object);
         
         (bool result, Exception exception) = await service.CreateBooking("Galileo Galilei", 1);
 
@@ -84,7 +86,7 @@ public class BookingServiceTests
         _mockCustomerRepository.Setup(repository => repository.GetCustomerByName("Eise Eisinga"))
             .Returns(Task.FromResult(new Customer("Eise Eisinga") { CustomerId = 1 }));
 
-        BookingService service = new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object);
+        BookingService service = new BookingService(_mockBookingRepository.Object, _mockCustomerRepository.Object, _mockFlightRepository.Object);
         
         (bool result, Exception exception) = await service.CreateBooking("Eise Eisinga", 2);
 

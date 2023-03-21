@@ -9,16 +9,19 @@ public class BookingService
 {
     private readonly BookingRepository _bookingRepository;
     private readonly CustomerRepository _customerRepository;
+    private readonly FlightRepository _flightRepository;
 
     public BookingService(BookingRepository bookingRepository)
     {
         _bookingRepository = bookingRepository;
     }
     
-    public BookingService(BookingRepository bookingRepository, CustomerRepository customerRepository)
+    public BookingService(BookingRepository bookingRepository, CustomerRepository customerRepository,
+        FlightRepository flightRepository)
     {
         _bookingRepository = bookingRepository;
         _customerRepository = customerRepository;
+        _flightRepository = flightRepository;
     }
 
     public async Task<(bool result, Exception exception)> CreateBooking(string name, int flightNumber)
