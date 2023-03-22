@@ -40,7 +40,7 @@ public class FlightRepositoryTests
     [TestMethod]
     public async Task GetFlightByFlightNumber_Success()
     {
-        Flight flight = await _repository.GetFlightByFlightNumber(1, 1, 2);
+        Flight flight = await _repository.GetFlightByFlightNumber(1);
         Flight dbFlight = await _context.Flights.FirstAsync(f => f.FlightNumber == 1);
         
         Assert.IsNotNull(dbFlight);
@@ -49,36 +49,37 @@ public class FlightRepositoryTests
         Assert.AreEqual(flight.Destination, dbFlight.Destination);
     }
     
-    [TestMethod]
-    [DataRow(1,-1,0)]
-    [ExpectedException(typeof(ArgumentException))]
-    public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirport(int flightNumber, int originAirportId, int destinationAirportId)
-    {
-        await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
-    }
+    // TODO: check if we need these tests
+    // [TestMethod]
+    // [DataRow(1,-1,0)]
+    // [ExpectedException(typeof(ArgumentException))]
+    // public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirport(int flightNumber, int originAirportId, int destinationAirportId)
+    // {
+    //     await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
+    // }
+    //
+    // [TestMethod]
+    // [DataRow(1,1,-1)]
+    // [ExpectedException(typeof(ArgumentException))]
+    // public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirport(int flightNumber, int originAirportId, int destinationAirportId)
+    // {
+    //     await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
+    // }
 
     [TestMethod]
-    [DataRow(1,1,-1)]
-    [ExpectedException(typeof(ArgumentException))]
-    public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirport(int flightNumber, int originAirportId, int destinationAirportId)
-    {
-        await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
-    }
-
-    [TestMethod]
-    [DataRow(-1,1,1)]
+    [DataRow(-1)]
     [ExpectedException(typeof(FlightNotFoundException))]
-    public async Task GetFlightByFlightNumber_Failure_InvalidFlightNumber(int flightNumber, int originAirportId, int destinationAirportId)
+    public async Task GetFlightByFlightNumber_Failure_InvalidFlightNumber(int flightNumber)
     {
-        await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
+        await _repository.GetFlightByFlightNumber(flightNumber);
     }
 
     [TestMethod]
     [ExpectedException(typeof(FlightNotFoundException))]
     public async Task GetFlightByFlightNumber_Failure_DatabaseException()
     {
-        int invalidArgs = 3;
-        await _repository.GetFlightByFlightNumber(invalidArgs,invalidArgs,invalidArgs);
+        int invalidArgs = 33;
+        await _repository.GetFlightByFlightNumber(invalidArgs);
     }
     
 }

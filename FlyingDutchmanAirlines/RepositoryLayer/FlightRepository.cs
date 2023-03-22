@@ -25,7 +25,7 @@ public class FlightRepository
         }
     }
 
-    public async Task<Flight> GetFlightByFlightNumber(int flightNumber, int originAirportId, int destinationAirportId)
+    public virtual async Task<Flight> GetFlightByFlightNumber(int flightNumber)
     {
         if (!flightNumber.IsPositive())
         {
@@ -33,17 +33,8 @@ public class FlightRepository
                               $"flightNumber: {flightNumber}");
             throw new FlightNotFoundException();
         }
-        
-        if (!originAirportId.IsPositive() || !destinationAirportId.IsPositive())
-        {
-            Console.WriteLine($"ArgumentException in GetFlightByFlightNumber! " +
-                              $"GetFlightByFlightNumber: {flightNumber}, " +
-                              $"originAirportId: {originAirportId}, " +
-                              $"destinationAirportId: {destinationAirportId}");
-            throw new ArgumentException("Invalid arguments provided");
-        }
-        
-        return await _context.Flights.FirstOrDefaultAsync(f => f.FlightNumber == flightNumber) 
+
+        return await _context.Flights.FirstOrDefaultAsync(f => f.FlightNumber == flightNumber)
                ?? throw new FlightNotFoundException();
     }
 

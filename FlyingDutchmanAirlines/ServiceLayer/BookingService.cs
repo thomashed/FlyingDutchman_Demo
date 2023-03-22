@@ -24,7 +24,7 @@ public class BookingService
         _flightRepository = flightRepository;
     }
 
-    public async Task<(bool result, Exception exception)> CreateBooking(string name, int flightNumber)
+    public async Task<(bool, Exception)> CreateBooking(string name, int flightNumber)
     {
         if (!flightNumber.IsPositive() || name.IsNullOrEmpty())
         {
@@ -33,6 +33,11 @@ public class BookingService
         
         try
         {
+            if (!await FlightExistsInDatabase(flightNumber))
+            {
+                throw new CouldNotAddBookingToDatabaseException();
+            }
+            
             Customer customer;
             try
             {
@@ -50,6 +55,18 @@ public class BookingService
         catch (Exception e)
         {
             return (false, e);
+        }
+    }
+
+    private async Task<bool> FlightExistsInDatabase(int flightNumber)
+    {
+        try
+        {
+            return await _flightRepository.GetFlightByFlightNumber(flightNumber) != null;
+        }
+        catch (FlightNotFoundException)
+        {
+            return false;
         }
     }
 }
