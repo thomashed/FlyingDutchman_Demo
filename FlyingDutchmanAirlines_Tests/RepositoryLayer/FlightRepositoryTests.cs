@@ -23,16 +23,24 @@ public class FlightRepositoryTests
                 .UseInMemoryDatabase("FlyingDutchman").Options;
         _context = new FlyingDutchmanAirlinesContext_Stub(dbContextOptions);
 
-        Flight flight = new Flight()
+        Flight flight1 = new Flight()
         {
             FlightNumber = 1,
             Origin = 1,
             Destination = 2
         };
 
-        _context.Flights.Add(flight);
+        Flight flight2 = new Flight()
+        {
+            FlightNumber = 10,
+            Origin = 3,
+            Destination = 4
+        };
+
+        _context.Flights.Add(flight1);
+        _context.Flights.Add(flight2);
         await _context.SaveChangesAsync();
-        
+
         _repository = new FlightRepository(_context);
         Assert.IsNotNull(_repository);
     }
@@ -42,13 +50,13 @@ public class FlightRepositoryTests
     {
         Flight flight = await _repository.GetFlightByFlightNumber(1);
         Flight dbFlight = await _context.Flights.FirstAsync(f => f.FlightNumber == 1);
-        
+
         Assert.IsNotNull(dbFlight);
         Assert.AreEqual(flight.FlightNumber, dbFlight.FlightNumber);
         Assert.AreEqual(flight.Origin, dbFlight.Origin);
         Assert.AreEqual(flight.Destination, dbFlight.Destination);
     }
-    
+
     // TODO: check if we need these tests
     // [TestMethod]
     // [DataRow(1,-1,0)]
@@ -81,5 +89,50 @@ public class FlightRepositoryTests
         int invalidArgs = 33;
         await _repository.GetFlightByFlightNumber(invalidArgs);
     }
+
+    [TestMethod]
+    public void GetFlights_Success_CorrectNumberOfFlights()
+    {
+        DbSet<Flight> flightsFromDb = _context.Flights;
+        Queue<Flight> flightsFromRepository = _repository.GetFlights();
+        
+        Assert.IsNotNull(flightsFromDb);
+        Assert.IsNotNull(flightsFromRepository);
+        Assert.AreEqual(flightsFromDb.Count(), flightsFromRepository.Count);
+    }
     
+    [TestMethod]
+    public void GetFlights_Success_CorrectSequenceOfFlights()
+    {
+        IEnumerable<Flight> flightsFromDb = _context.Flights;
+        Queue<Flight> flightsFromRepository = _repository.GetFlights();
+        bool areEqual = flightsFromDb.SequenceEqual(flightsFromRepository);
+        
+        Assert.IsNotNull(flightsFromDb);
+        Assert.IsNotNull(flightsFromRepository);
+        Assert.IsTrue(areEqual);
+    }
+    
+    [TestMethod]
+    public void GetFlights_Failure_WrongSequenceOfFlights()
+    {
+        IEnumerable<Flight> flightsFromDb = _context.Flights;
+        Queue<Flight> flightsFromRepository = _repository.GetFlights();
+        
+        flightsFromRepository.Enqueue(
+            new Flight()
+            {
+                FlightNumber = 42,
+                Destination = 42,
+                Origin = 42
+            });
+        
+        bool areEqual = flightsFromDb.SequenceEqual(flightsFromRepository);
+        
+        Assert.IsNotNull(flightsFromDb);
+        Assert.IsNotNull(flightsFromRepository);
+        Assert.IsFalse(areEqual);
+    }
+    
+    // TODO: expect some exception and that we can handle it, mock out context for this?
 }
