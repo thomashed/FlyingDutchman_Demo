@@ -1,3 +1,4 @@
+using System.Runtime.ExceptionServices;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.RepositoryLayer;
@@ -11,13 +12,16 @@ public class BookingService
     private readonly CustomerRepository _customerRepository;
     private readonly FlightRepository _flightRepository;
 
-    public BookingService(BookingRepository bookingRepository)
+    public BookingService(BookingRepository bookingRepository) // TODO can we delete this ctor?
     {
         _bookingRepository = bookingRepository;
     }
     
-    public BookingService(BookingRepository bookingRepository, CustomerRepository customerRepository,
-        FlightRepository flightRepository)
+    public BookingService(
+        BookingRepository bookingRepository, 
+        CustomerRepository customerRepository,
+        FlightRepository flightRepository
+        )
     {
         _bookingRepository = bookingRepository;
         _customerRepository = customerRepository;
@@ -33,20 +37,12 @@ public class BookingService
         
         try
         {
+            Customer customer = await GetCustomerFromDatabase(name)
+                                ?? await AddCustomerToDatabase(name);
+            
             if (!await FlightExistsInDatabase(flightNumber))
             {
-                throw new CouldNotAddBookingToDatabaseException();
-            }
-            
-            Customer customer;
-            try
-            {
-                customer = await _customerRepository.GetCustomerByName(name);
-            }
-            catch (CustomerNotFoundException e)
-            {
-                await _customerRepository.CreateCustomer(name);
-                return await CreateBooking(name, flightNumber);
+                return (false, new CouldNotAddBookingToDatabaseException());
             }
 
             await _bookingRepository.CreateBooking(customer.CustomerId, flightNumber);
@@ -68,5 +64,28 @@ public class BookingService
         {
             return false;
         }
+    }
+
+    private async Task<Customer?> GetCustomerFromDatabase(string name)
+    {
+        try
+        {
+            return await _customerRepository.GetCustomerByName(name);
+        }
+        catch (CustomerNotFoundException)
+        {
+            return null;
+        }
+        catch (Exception e) // if something else was thrown, something went wrong, re-throw
+        {
+            ExceptionDispatchInfo.Capture(e.InnerException ?? new Exception()).Throw();
+            return null;
+        }
+    }
+
+    private async Task<Customer> AddCustomerToDatabase(string name)
+    {
+        await _customerRepository.CreateCustomer(name);
+        return await _customerRepository.GetCustomerByName(name);
     }
 }
