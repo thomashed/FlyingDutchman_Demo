@@ -1,15 +1,7 @@
 using FlyingDutchmanAirlines.RepositoryLayer;
-using Microsoft.AspNetCore.Http;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.ExceptionServices;
-using FlyingDutchmanAirlines_Tests.RepositoryLayer.Stubs;
-using FlyingDutchmanAirlines.DatabaseLayer;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.ServiceLayer;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace FlyingDutchmanAirlines_Tests.ServiceLayer;
