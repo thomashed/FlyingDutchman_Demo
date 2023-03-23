@@ -38,15 +38,12 @@ public class FlightRepository
                ?? throw new FlightNotFoundException();
     }
 
-    public virtual Queue<Flight> GetFlights()
+    public virtual IEnumerable<Flight> GetFlights()
     {
-        Queue<Flight> flights = new Queue<Flight>();
         foreach (Flight flight in _context.Flights)
         {
-            flights.Enqueue(flight);
+            yield return flight;
         }
-
-        return flights;
     }
 
 }

@@ -94,18 +94,18 @@ public class FlightRepositoryTests
     public void GetFlights_Success_CorrectNumberOfFlights()
     {
         DbSet<Flight> flightsFromDb = _context.Flights;
-        Queue<Flight> flightsFromRepository = _repository.GetFlights();
+        IEnumerable<Flight> flightsFromRepository = _repository.GetFlights();
         
         Assert.IsNotNull(flightsFromDb);
         Assert.IsNotNull(flightsFromRepository);
-        Assert.AreEqual(flightsFromDb.Count(), flightsFromRepository.Count);
+        Assert.AreEqual(flightsFromDb.Count(), flightsFromRepository.Count());
     }
     
     [TestMethod]
     public void GetFlights_Success_CorrectSequenceOfFlights()
     {
         IEnumerable<Flight> flightsFromDb = _context.Flights;
-        Queue<Flight> flightsFromRepository = _repository.GetFlights();
+        IEnumerable<Flight> flightsFromRepository = _repository.GetFlights();
         bool areEqual = flightsFromDb.SequenceEqual(flightsFromRepository);
         
         Assert.IsNotNull(flightsFromDb);
@@ -117,17 +117,17 @@ public class FlightRepositoryTests
     public void GetFlights_Failure_WrongSequenceOfFlights()
     {
         IEnumerable<Flight> flightsFromDb = _context.Flights;
-        Queue<Flight> flightsFromRepository = _repository.GetFlights();
-        
-        flightsFromRepository.Enqueue(
-            new Flight()
+        IEnumerable<Flight> flightsFromRepository = _repository.GetFlights();
+        IEnumerable<Flight> miscellaneousFlights = 
+            new Flight[1] { new Flight()
             {
                 FlightNumber = 42,
                 Destination = 42,
                 Origin = 42
-            });
+            }};
+        IEnumerable<Flight> flightsInWrongSequence = flightsFromRepository.Concat(miscellaneousFlights);
         
-        bool areEqual = flightsFromDb.SequenceEqual(flightsFromRepository);
+        bool areEqual = flightsFromDb.SequenceEqual(flightsInWrongSequence);
         
         Assert.IsNotNull(flightsFromDb);
         Assert.IsNotNull(flightsFromRepository);
