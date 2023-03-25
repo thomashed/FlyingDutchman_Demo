@@ -57,23 +57,6 @@ public class FlightRepositoryTests
         Assert.AreEqual(flight.Destination, dbFlight.Destination);
     }
 
-    // TODO: check if we need these tests
-    // [TestMethod]
-    // [DataRow(1,-1,0)]
-    // [ExpectedException(typeof(ArgumentException))]
-    // public async Task GetFlightByFlightNumber_Failure_InvalidOriginAirport(int flightNumber, int originAirportId, int destinationAirportId)
-    // {
-    //     await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
-    // }
-    //
-    // [TestMethod]
-    // [DataRow(1,1,-1)]
-    // [ExpectedException(typeof(ArgumentException))]
-    // public async Task GetFlightByFlightNumber_Failure_InvalidDestinationAirport(int flightNumber, int originAirportId, int destinationAirportId)
-    // {
-    //     await _repository.GetFlightByFlightNumber(flightNumber, originAirportId, destinationAirportId);
-    // }
-
     [TestMethod]
     [DataRow(-1)]
     [ExpectedException(typeof(FlightNotFoundException))]
