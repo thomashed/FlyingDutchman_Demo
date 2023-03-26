@@ -50,4 +50,29 @@ public class FlightService
         }
     }
 
+    public async Task<FlightView> GetFlightByFlightNumber(int flightNumber)
+    {
+        
+        try
+        {
+            Flight flight = await _flightRepository.GetFlightByFlightNumber(flightNumber);
+            Airport origin = await _airportRepository.GetAirportById(flight.Origin);
+            Airport destination = await _airportRepository.GetAirportById(flight.Destination);
+            
+            return new FlightView(
+                flight.FlightNumber.ToString(), 
+                (origin.City, origin.Iata),
+                (destination.City, destination.Iata)
+                );
+        }
+        catch (FlightNotFoundException)
+        {
+            throw new FlightNotFoundException();
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentException();
+        }
+    }
+
 }
