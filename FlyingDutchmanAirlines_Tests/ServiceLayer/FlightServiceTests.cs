@@ -13,22 +13,32 @@ public class FlightServiceTests
     private Mock<FlightRepository> _mockFlightRepository;
     private Mock<AirportRepository> _mockAirportRepository;
 
+    private readonly int _flightInDatabaseOriginID = 31;
+    private readonly int _flightInDatabaseDestinationID = 92;
+    
     [TestInitialize]
     public async Task TestInitialize()
     {
         _mockFlightRepository = new Mock<FlightRepository>();
         _mockAirportRepository = new Mock<AirportRepository>();
+        
+        Flight flightInDatabase = new Flight { 
+            FlightNumber = 148, 
+            Origin = _flightInDatabaseOriginID, 
+            Destination = _flightInDatabaseDestinationID 
+        };
+
+        Queue<Flight> mockReturn = new Queue<Flight>(1);
+        mockReturn.Enqueue(flightInDatabase);
+
+        _mockFlightRepository.Setup(
+            repository => repository
+                .GetFlights()).Returns(mockReturn);
     }
     
     [TestMethod]
     public async Task GetFlights_Success()
     {
-        Flight flightInDatabase = new Flight { 
-            FlightNumber = 148, 
-            Origin = 31, 
-            Destination = 92 
-        };
-
         Airport[] airportsInDatabase = new Airport[2]
         {
             new Airport(){
@@ -42,19 +52,12 @@ public class FlightServiceTests
                 Iata = "UBN" 
             }
         };
-        
-        Queue<Flight> mockReturn = new Queue<Flight>(1);
-        mockReturn.Enqueue(flightInDatabase);
-
-        _mockFlightRepository.Setup(
-            repository => repository
-                .GetFlights()).Returns(mockReturn);
 
         _mockAirportRepository.Setup(
-                repository => repository.GetAirportById(31))
+                repository => repository.GetAirportById(_flightInDatabaseOriginID))
             .ReturnsAsync(airportsInDatabase[0]);
         _mockAirportRepository.Setup(
-                repository => repository.GetAirportById(92))
+                repository => repository.GetAirportById(_flightInDatabaseDestinationID))
             .ReturnsAsync(airportsInDatabase[1]);
         
         FlightService service = new FlightService(
@@ -76,19 +79,8 @@ public class FlightServiceTests
     [ExpectedException(typeof(FlightNotFoundException))]
     public async Task GetFlights_Failure_RepositoryException()
     {
-        Queue<Flight> mockReturn = new Queue<Flight>();
-        mockReturn.Enqueue(new Flight()
-            {
-                FlightNumber = 148, 
-                Origin = 31, 
-                Destination = 92
-            } 
-        );
-
-        _mockFlightRepository.Setup(repository => repository
-            .GetFlights()).Returns(mockReturn);
-
-        _mockAirportRepository.Setup(repository => repository.GetAirportById(31))
+        _mockAirportRepository.Setup(repository => repository
+                .GetAirportById(_flightInDatabaseOriginID))
             .ThrowsAsync(new FlightNotFoundException());
 
         FlightService service = new FlightService(
@@ -105,20 +97,8 @@ public class FlightServiceTests
     [ExpectedException(typeof(ArgumentException))]
     public async Task GetFlights_Failure_RegularException()
     {
-        // supply a negative arg for airportRepo, it should then throw an argException
-
-        Queue<Flight> mockReturnFlights = new Queue<Flight>(1);
-        mockReturnFlights.Enqueue(new Flight()
-        {
-            FlightNumber = 148, 
-            Origin = 31, 
-            Destination = 92
-        });
-
-        _mockFlightRepository.Setup(repository => repository
-            .GetFlights()).Returns(mockReturnFlights);
         _mockAirportRepository.Setup(repository => repository
-            .GetAirportById(31)).ThrowsAsync(new NullReferenceException());
+            .GetAirportById(_flightInDatabaseOriginID)).ThrowsAsync(new NullReferenceException());
 
         FlightService service = new FlightService(
             _mockFlightRepository.Object,
