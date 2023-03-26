@@ -25,8 +25,22 @@ public class FlightService
 
         foreach (Flight flight in flights)
         {
-            Airport origin = await _airportRepository.GetAirportById(flight.Origin);
-            Airport destination = await _airportRepository.GetAirportById(flight.Destination);
+            Airport origin;
+            Airport destination;
+
+            try
+            {
+                origin = await _airportRepository.GetAirportById(flight.Origin);
+                destination = await _airportRepository.GetAirportById(flight.Destination);
+            }
+            catch (FlightNotFoundException) // TODO: should be AirportNotFoundException?
+            {
+                throw new FlightNotFoundException();
+            }
+            catch (Exception e)
+            {
+                throw new ArgumentException();
+            }
             
             yield return new FlightView(
                 flight.FlightNumber.ToString(),
