@@ -42,11 +42,11 @@ public class FlightController : Controller
         }
         catch (FlightNotFoundException e)
         {
-            return StatusCode((int)HttpStatusCode.NotFound);
+            return StatusCode((int)HttpStatusCode.NotFound, "No flights were found in the database");
         }
         catch (Exception e)
         {
-            return StatusCode((int)HttpStatusCode.InternalServerError);
+            return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error");
         }
     }
 }
