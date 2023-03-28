@@ -1,5 +1,10 @@
 using System.Net;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using FlyingDutchmanAirlines.Exceptions;
 using FlyingDutchmanAirlines.ServiceLayer;
+using FlyingDutchmanAirlines.Views;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FlyingDutchmanAirlines.ControllerLayer;
@@ -13,8 +18,35 @@ public class FlightController : Controller
         _flightService = flightService;
     }
 
-    public IActionResult GetFlights()
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public FlightController()
     {
-        return StatusCode((int)HttpStatusCode.OK, "Hello World!");
+        if (Assembly.GetCallingAssembly().FullName == Assembly.GetExecutingAssembly().FullName)
+        {
+            throw new Exception("This constructor should only be used for testing");
+        }
+    }
+
+    public virtual async Task<IActionResult> GetFlights()
+    {
+        try
+        {
+            Queue<FlightView> flights = new Queue<FlightView>();
+
+            await foreach (FlightView flightView in _flightService.GetFlights())
+            {
+                flights.Enqueue(flightView);
+            }
+        
+            return StatusCode((int)HttpStatusCode.OK, flights);
+        }
+        catch (FlightNotFoundException e)
+        {
+            return StatusCode((int)HttpStatusCode.NotFound);
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError);
+        }
     }
 }

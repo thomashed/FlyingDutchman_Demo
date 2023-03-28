@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using FlyingDutchmanAirlines.DatabaseLayer.Models;
 using FlyingDutchmanAirlines.Exceptions;
@@ -18,8 +20,17 @@ public class FlightService
         _flightRepository = flightRepository;
         _airportRepository = airportRepository;
     }
+    
+    [MethodImpl(MethodImplOptions.NoInlining)]
+    public FlightService()
+    {
+        if (Assembly.GetCallingAssembly().FullName == Assembly.GetExecutingAssembly().FullName)
+        {
+            throw new Exception("This constructor should only be used for testing");
+        }
+    }
 
-    public async IAsyncEnumerable<FlightView> GetFlights()
+    public virtual async IAsyncEnumerable<FlightView> GetFlights()
     {
         Queue<Flight> flights = new Queue<Flight>(_flightRepository.GetFlights());
 
