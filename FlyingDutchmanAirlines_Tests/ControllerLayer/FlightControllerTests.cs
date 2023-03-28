@@ -72,6 +72,12 @@ public class FlightControllerTests
         Assert.AreEqual("Internal server error", response.Value);
     }
 
+    [TestMethod]
+    public async Task GetFlightByFlightNumber_Success()
+    {
+        
+    }
+    
     private async IAsyncEnumerable<FlightView> FlightViewAsyncGenerator(IEnumerable<FlightView> views)
     {
         foreach (FlightView view in views)
@@ -79,5 +85,4 @@ public class FlightControllerTests
             yield return view;
         }
     }
-
 }

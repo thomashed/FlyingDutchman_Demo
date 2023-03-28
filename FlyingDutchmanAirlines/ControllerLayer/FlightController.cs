@@ -49,4 +49,10 @@ public class FlightController : Controller
             return StatusCode((int)HttpStatusCode.InternalServerError, "Internal server error");
         }
     }
+
+    public async Task<IActionResult> GetFlightByFlightNumber(int flightNumber)
+    {
+        // return StatusCode((int)HttpStatusCode.OK, "GetFlightByFlightNumber");
+        throw new NotImplementedException();
+    }
 }
