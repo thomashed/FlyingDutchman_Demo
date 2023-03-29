@@ -91,6 +91,21 @@ public class FlightControllerTests
         Assert.IsNotNull(content);
         Assert.AreEqual(returnedFlightView, content);
     }
+
+    [TestMethod]
+    public async Task GetFlightByFlightNumber_Failure_FlightNotFoundException_404()
+    {
+        _flightService.Setup(service =>
+            service.GetFlightByFlightNumber(42)).ThrowsAsync(new FlightNotFoundException());
+        
+        FlightController controller = new FlightController(_flightService.Object);
+
+        ObjectResult response = await controller.GetFlightByFlightNumber(42) as ObjectResult;
+        
+        Assert.IsNotNull(response);
+        Assert.AreEqual((int)HttpStatusCode.NotFound, response.StatusCode);
+        Assert.AreEqual("No flight were found in the database", response.Value);
+    }
     
     private async IAsyncEnumerable<FlightView> FlightViewAsyncGenerator(IEnumerable<FlightView> views)
     {

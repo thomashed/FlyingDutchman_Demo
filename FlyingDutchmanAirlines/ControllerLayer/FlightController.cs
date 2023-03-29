@@ -59,7 +59,7 @@ public class FlightController : Controller
         }
         catch (FlightNotFoundException)
         {
-            return StatusCode((int)HttpStatusCode.NotFound, "Flight not found in the database");
+            return StatusCode((int)HttpStatusCode.NotFound, "No flight were found in the database");
         }
         catch (Exception e)
         {
