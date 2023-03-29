@@ -19,15 +19,6 @@ public class FlightController : Controller
         _flightService = flightService;
     }
 
-    [MethodImpl(MethodImplOptions.NoInlining)]
-    public FlightController()
-    {
-        if (Assembly.GetCallingAssembly().FullName == Assembly.GetExecutingAssembly().FullName)
-        {
-            throw new Exception("This constructor should only be used for testing");
-        }
-    }
-
     [HttpGet]
     public virtual async Task<IActionResult> GetFlights()
     {
