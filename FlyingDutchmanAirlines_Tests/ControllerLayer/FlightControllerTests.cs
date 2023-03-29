@@ -75,7 +75,21 @@ public class FlightControllerTests
     [TestMethod]
     public async Task GetFlightByFlightNumber_Success()
     {
+        FlightView returnedFlightView = new FlightView(
+                "0", ("Lagos", "LOS"),
+                ("Marrakesh", "RAK"));
+        _flightService.Setup(service =>
+            service.GetFlightByFlightNumber(0)).Returns(Task.FromResult(returnedFlightView)); // TODO: try returnsAsync
+     
+        FlightController flightController = new FlightController(_flightService.Object);
+        ObjectResult response = await flightController.GetFlightByFlightNumber(0) as ObjectResult;
         
+        Assert.IsNotNull(response);
+        Assert.AreEqual((int)HttpStatusCode.OK, response.StatusCode);
+
+        FlightView content = response.Value as FlightView;
+        Assert.IsNotNull(content);
+        Assert.AreEqual(returnedFlightView, content);
     }
     
     private async IAsyncEnumerable<FlightView> FlightViewAsyncGenerator(IEnumerable<FlightView> views)

@@ -61,7 +61,7 @@ public class FlightService
         }
     }
 
-    public async Task<FlightView> GetFlightByFlightNumber(int flightNumber)
+    public virtual async Task<FlightView> GetFlightByFlightNumber(int flightNumber)
     {
         
         try

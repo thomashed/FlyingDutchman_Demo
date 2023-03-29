@@ -52,6 +52,20 @@ public class FlightController : Controller
 
     public async Task<IActionResult> GetFlightByFlightNumber(int flightNumber)
     {
+        try
+        {
+            FlightView flightView = await _flightService.GetFlightByFlightNumber(flightNumber);
+            return StatusCode((int)HttpStatusCode.OK, flightView);
+        }
+        catch (FlightNotFoundException)
+        {
+            return StatusCode((int)HttpStatusCode.NotFound, "Flight not found in the database");
+        }
+        catch (Exception e)
+        {
+            return StatusCode((int)HttpStatusCode.InternalServerError, "An internal server error occurred");
+        }
+        
         // return StatusCode((int)HttpStatusCode.OK, "GetFlightByFlightNumber");
         throw new NotImplementedException();
     }
