@@ -54,12 +54,21 @@ public class FlightController : Controller
     {
         try
         {
+            if (!flightNumber.IsPositive())
+            {
+                throw new ArgumentException();
+            }
+            
             FlightView flightView = await _flightService.GetFlightByFlightNumber(flightNumber);
             return StatusCode((int)HttpStatusCode.OK, flightView);
         }
         catch (FlightNotFoundException)
         {
             return StatusCode((int)HttpStatusCode.NotFound, "No flight were found in the database");
+        }
+        catch (ArgumentException)
+        {
+            return StatusCode((int)HttpStatusCode.BadRequest, "Bad request");
         }
         catch (Exception e)
         {

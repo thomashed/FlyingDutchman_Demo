@@ -1,3 +1,4 @@
+using System.Data;
 using System.Net;
 using FlyingDutchmanAirlines.ControllerLayer;
 using FlyingDutchmanAirlines.Exceptions;
@@ -108,10 +109,10 @@ public class FlightControllerTests
     }
 
     [TestMethod]
-    public async Task GetFlightByFlightNumber_Failure_ArgumentException_500()
+    public async Task GetFlightByFlightNumber_Failure_NullReferenceException_500()
     {
         _flightService.Setup(service => 
-            service.GetFlightByFlightNumber(21)).Throws(new ArgumentException());
+            service.GetFlightByFlightNumber(21)).Throws(new NullReferenceException());
         
         FlightController controller = new FlightController(_flightService.Object);
 
@@ -120,6 +121,23 @@ public class FlightControllerTests
         Assert.IsNotNull(response);
         Assert.AreEqual((int)HttpStatusCode.InternalServerError, response.StatusCode);
         Assert.AreEqual("An internal server error occurred", response.Value);
+    }
+
+    [TestMethod]
+    [DataRow(1)]
+    public async Task GetFlightByFlightNumber_Failure_ArgumentException_400(int flightNumber)
+    {
+        _flightService.Setup(service =>
+            service.GetFlightByFlightNumber(1)).Throws(new ArgumentException());
+
+        FlightController controller = new FlightController(_flightService.Object);
+
+        ObjectResult response = await 
+            controller.GetFlightByFlightNumber(flightNumber) as ObjectResult;
+
+        Assert.IsNotNull(response);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.AreEqual("Bad request", response.Value);
     }
     
     private async IAsyncEnumerable<FlightView> FlightViewAsyncGenerator(IEnumerable<FlightView> views)
