@@ -96,7 +96,7 @@ public class FlightControllerTests
     public async Task GetFlightByFlightNumber_Failure_FlightNotFoundException_404()
     {
         _flightService.Setup(service =>
-            service.GetFlightByFlightNumber(42)).ThrowsAsync(new FlightNotFoundException());
+            service.GetFlightByFlightNumber(42)).Throws(new FlightNotFoundException());
         
         FlightController controller = new FlightController(_flightService.Object);
 
@@ -105,6 +105,21 @@ public class FlightControllerTests
         Assert.IsNotNull(response);
         Assert.AreEqual((int)HttpStatusCode.NotFound, response.StatusCode);
         Assert.AreEqual("No flight were found in the database", response.Value);
+    }
+
+    [TestMethod]
+    public async Task GetFlightByFlightNumber_Failure_ArgumentException_500()
+    {
+        _flightService.Setup(service => 
+            service.GetFlightByFlightNumber(21)).Throws(new ArgumentException());
+        
+        FlightController controller = new FlightController(_flightService.Object);
+
+        ObjectResult response = await controller.GetFlightByFlightNumber(21) as ObjectResult;
+
+        Assert.IsNotNull(response);
+        Assert.AreEqual((int)HttpStatusCode.InternalServerError, response.StatusCode);
+        Assert.AreEqual("An internal server error occurred", response.Value);
     }
     
     private async IAsyncEnumerable<FlightView> FlightViewAsyncGenerator(IEnumerable<FlightView> views)

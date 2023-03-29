@@ -65,8 +65,5 @@ public class FlightController : Controller
         {
             return StatusCode((int)HttpStatusCode.InternalServerError, "An internal server error occurred");
         }
-        
-        // return StatusCode((int)HttpStatusCode.OK, "GetFlightByFlightNumber");
-        throw new NotImplementedException();
     }
 }
