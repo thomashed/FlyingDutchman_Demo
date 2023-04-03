@@ -43,6 +43,7 @@ public class FlightController : Controller
         }
     }
 
+    [HttpGet("{flightNumber}")]
     public async Task<IActionResult> GetFlightByFlightNumber(int flightNumber)
     {
         try
