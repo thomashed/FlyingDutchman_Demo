@@ -20,8 +20,12 @@ public class Startup
     {
         services.AddControllers();
         services.AddTransient(typeof(FlightService),typeof(FlightService));
+        services.AddTransient(typeof(BookingService), typeof(BookingService));
         services.AddTransient(typeof(FlightRepository), typeof(FlightRepository));
         services.AddTransient(typeof(AirportRepository), typeof(AirportRepository));
+        services.AddTransient(typeof(CustomerRepository), typeof(CustomerRepository));
+        services.AddTransient(typeof(BookingRepository), typeof(BookingRepository));
+        services.AddDbContext<FlyingDutchmanAirlinesContext>(ServiceLifetime.Transient);
         services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
     }
 
