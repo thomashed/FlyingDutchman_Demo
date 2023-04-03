@@ -12,6 +12,11 @@ public class Startup
     {
         app.UseRouting();
         app.UseEndpoints(endpoints => endpoints.MapControllers()); // configure endpoints, scan for controllers in the app 
+
+        app.UseSwagger();
+        app.UseSwaggerUI(swagger =>
+            swagger.SwaggerEndpoint("/swagger/v1/swagger.json",
+                "Flying Dutchman Airlines"));
     }
 
     // Host first calls ConfigureServices, giving us a chance to register any services we want to use in our
@@ -27,6 +32,8 @@ public class Startup
         services.AddTransient(typeof(BookingRepository), typeof(BookingRepository));
         services.AddDbContext<FlyingDutchmanAirlinesContext>(ServiceLifetime.Transient);
         services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
+
+        services.AddSwaggerGen();
     }
 
 }
