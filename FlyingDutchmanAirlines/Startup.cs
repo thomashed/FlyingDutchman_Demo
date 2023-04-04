@@ -3,6 +3,7 @@ using FlyingDutchmanAirlines.RepositoryLayer;
 using FlyingDutchmanAirlines.ServiceLayer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.OpenApi.Models;
 
 namespace FlyingDutchmanAirlines;
 
@@ -33,7 +34,21 @@ public class Startup
         services.AddDbContext<FlyingDutchmanAirlinesContext>(ServiceLifetime.Transient);
         services.AddTransient(typeof(FlyingDutchmanAirlinesContext), typeof(FlyingDutchmanAirlinesContext));
 
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(options =>
+                {
+                    options.SwaggerDoc("v1",
+                        new OpenApiInfo
+                        {
+                            Title = "",
+                            Version = "v1"
+                        }
+                    );
+                    var filePath = Path.Combine(System.AppContext.BaseDirectory, "MyApi.xml");
+                    options.IncludeXmlComments(filePath);
+                }
+            );
+
+        
     }
 
 }
