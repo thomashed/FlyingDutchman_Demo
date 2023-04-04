@@ -20,7 +20,6 @@ public class BookingController : Controller
 
     [HttpPost("{flightNumber}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateBooking([FromBody] BookingData body, int flightNumber)
     {
@@ -35,9 +34,7 @@ public class BookingController : Controller
                 return StatusCode((int)HttpStatusCode.Created);
             }
 
-            return exception is CouldNotAddBookingToDatabaseException
-                ? StatusCode((int)HttpStatusCode.NotFound)
-                : StatusCode((int)HttpStatusCode.InternalServerError, exception.Message);
+            return StatusCode((int)HttpStatusCode.InternalServerError, exception.Message);
         }
 
         return StatusCode((int)HttpStatusCode.InternalServerError, 
